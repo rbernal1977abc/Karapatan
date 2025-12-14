@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Philippine Legal AI Assistant</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fa; color: #333; line-height: 1.5; }
+        
+        .container { width: 100%; padding: 0 15px; max-width: 600px; margin: 0 auto; }
+        
+        .header { 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            color: white; padding: 22px 20px; text-align: center;
+            margin-bottom: 20px; border-radius: 0 0 15px 15px;
+        }
+        .header h1 { font-size: 1.7rem; margin-bottom: 5px; }
+        
+        .api-panel { 
+            background: white; margin-bottom: 20px; padding: 20px; 
+            border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .status-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+        .status-text { font-weight: 600; font-size: 1.1rem; }
+        .status-text.connected { color: #1e6f5c; }
+        .status-text.disconnected { color: #666; }
+        
+        #apiKeyInput { 
+            width: 100%; padding: 16px; margin: 10px 0; 
+            border: 2px solid #d1d9e6; border-radius: 10px; 
+            font-size: 1rem; font-family: monospace;
+        }
+        .action-btn { 
+            width: 100%; padding: 17px; margin: 5px 0;
+            background: #1e3c72; color: white; 
+            border: none; border-radius: 10px; 
+            font-weight: 600; font-size: 1rem; 
+            cursor: pointer;
+        }
+        .disconnect-btn { background: #dc3545; }
+        
+        .chat-interface { 
+            background: white; margin-bottom: 20px; padding: 20px; 
+            border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        #chatHistory { 
+            height: 55vh; min-height: 350px; 
+            overflow-y: auto; padding: 15px; 
+            background: #f8f9fa; border-radius: 10px; 
+            border: 1px solid #e9ecef; margin-bottom: 20px;
+        }
+        .message { margin-bottom: 15px; }
+        .user-message { 
+            background: #1e3c72; color: white; padding: 14px 18px; 
+            border-radius: 18px 18px 4px 18px; margin-left: auto; max-width: 85%;
+        }
+        .ai-message { 
+            background: white; border: 1px solid #e1e5eb; padding: 14px 18px; 
+            border-radius: 18px 18px 18px 4px; max-width: 85%;
+        }
+        .chat-input-area { display: flex; flex-direction: column; gap: 12px; }
+        #userInput { 
+            padding: 17px; border: 2px solid #d1d9e6; 
+            border-radius: 10px; font-size: 1rem; min-height: 60px; resize: none;
+        }
+        #sendButton { padding: 17px; background: #1e3c72; color: white; 
+            border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        #sendButton:disabled { background: #a0aec0; cursor: not-allowed; }
+        
+        .laws-section {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 14px;
+            margin-top: 20px;
+            border-left: 5px solid #1e3c72;
+        }
+        .laws-section h3 { color: #1e3c72; margin-bottom: 15px; }
+        .law-category {
+            margin-bottom: 15px;
+        }
+        .law-category h4 {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+        }
+        .law-title {
+            background: white;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            border-left: 3px solid #1e3c72;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🇵🇭 Philippine Legal AI</h1>
+            <div>Personal Assistant with Embedded Laws</div>
+        </div>
+
+        <!-- API Panel -->
+        <div class="api-panel">
+            <h3>API Connection</h3>
+            
+            <div class="status-box" id="statusBox">
+                <div class="status-text disconnected" id="statusText">Not Connected</div>
+                <div id="statusDetail" style="font-size:0.9rem; margin-top:8px; color:#666;">
+                    Enter your key and click Connect
+                </div>
+            </div>
+            
+            <input type="text" id="apiKeyInput" placeholder="Paste your DeepSeek API key" value="sk-27ddf66de4914457af0bdbe1db8cd549">
+            
+            <button class="action-btn" id="connectBtn" onclick="connectApi()">Connect</button>
+            <button class="action-btn disconnect-btn" id="disconnectBtn" onclick="disconnectApi()" style="display:none;">Disconnect</button>
+            
+            <div style="margin-top:15px; font-size:0.85rem; color:#666; text-align:center;">
+                <span id="keyInfo">Your key is pre-filled above</span>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-interface">
+            <div id="chatHistory">
+                <div class="message">
+                    <div class="ai-message">Connect your API key above to start asking legal questions about Philippine laws.</div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <textarea id="userInput" placeholder="Ask about Philippine law..." disabled></textarea>
+                <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
+            </div>
+        </div>
+
+        <!-- Simplified Laws Display -->
+        <div class="laws-section">
+            <h3>📚 Embedded Philippine Laws Database</h3>
+            <p><strong>Total: <span id="lawCount">0</span> legal provisions</strong> (AI references full text)</p>
+            <div id="lawsList">
+                <!-- Laws will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const STORAGE_KEY = 'deepseek_api_key';
+        let userApiKey = null;
+        let isConnected = false;
+        
+        // DOM Elements
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const statusText = document.getElementById('statusText');
+        const statusDetail = document.getElementById('statusDetail');
+        const statusBox = document.getElementById('statusBox');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const keyInfo = document.getElementById('keyInfo');
+        const lawsList = document.getElementById('lawsList');
+        const lawCount = document.getElementById('lawCount');
+        
+        // PHILIPPINE LAWS DATABASE (Full text embedded, only titles shown)
+        const PHILIPPINE_LAWS = [
+            // 1987 CONSTITUTION - BILL OF RIGHTS
+            { id: "CONST_1", category: "Constitution", title: "Due Process & Equal Protection", text: "No person shall be deprived of life, liberty, or property without due process of law, nor shall any person be denied the equal protection of the laws. (Article III, Section 1)" },
+            { id: "CONST_2", category: "Constitution", title: "Right Against Unreasonable Searches", text: "The right of the people to be secure in their persons, houses, papers, and effects against unreasonable searches and seizures of whatever nature and for any purpose shall be inviolable. (Article III, Section 2)" },
+            { id: "CONST_3", category: "Constitution", title: "Privacy of Communication", text: "The privacy of communication and correspondence shall be inviolable except upon lawful order of the court, or when public safety or order requires otherwise. (Article III, Section 3)" },
+            { id: "CONST_4", category: "Constitution", title: "Freedom of Speech", text: "No law shall be passed abridging the freedom of speech, of expression, or of the press, or the right of the people peaceably to assemble. (Article III, Section 4)" },
+            { id: "CONST_5", category: "Constitution", title: "Freedom of Religion", text: "No law shall be made respecting an establishment of religion, or prohibiting the free exercise thereof. (Article III, Section 5)" },
+            { id: "CONST_12", category: "Constitution", title: "Rights of Persons Under Investigation", text: "Any person under investigation shall have the right to remain silent and to have competent counsel. If unable to afford counsel, one must be provided. (Article III, Section 12)" },
+            { id: "CONST_14", category: "Constitution", title: "Presumption of Innocence", text: "No person shall be held to answer for a criminal offense without due process of law. The accused shall be presumed innocent until proven guilty. (Article III, Section 14)" },
+            
+            // CIVIL CODE
+            { id: "CIV_19", category: "Civil Code", title: "Human Relations", text: "Every person must, in the exercise of his rights and in the performance of his duties, act with justice, give everyone his due, and observe honesty and good faith. (Article 19)" },
+            { id: "CIV_20", category: "Civil Code", title: "Damages for Violations", text: "Every person who, contrary to law, wilfully or negligently causes damage to another, shall indemnify the latter for the same. (Article 20)" },
+            { id: "CIV_1156", category: "Civil Code", title: "Definition of Obligation", text: "An obligation is a juridical necessity to give, to do or not to do. (Article 1156)" },
+            { id: "CIV_1311", category: "Civil Code", title: "Contracts Binding Effect", text: "Contracts take effect only between the parties, their assigns and heirs. (Article 1311)" },
+            
+            // FAMILY CODE (Important for divorce/annulment questions)
+            { id: "FAM_1", category: "Family Code", title: "Marriage as Contract", text: "Marriage is a special contract of permanent union between a man and a woman entered into in accordance with law. (Article 1)" },
+            { id: "FAM_45", category: "Family Code", title: "Grounds for Annulment", text: "A marriage may be annulled for causes including: (1) Lack of parental consent; (2) Insanity; (3) Fraud; (4) Force; (5) Impotence. (Article 45)" },
+            { id: "FAM_55", category: "Family Code", title: "Legal Separation Grounds", text: "Legal separation may be granted for: (1) Repeated physical violence; (2) Drug addiction; (3) Attempt against life; (4) Sexual infidelity. (Article 55)" },
+            
+            // LABOR CODE
+            { id: "LAB_82", category: "Labor Code", title: "Normal Working Hours", text: "The normal hours of work of any employee shall not exceed eight (8) hours a day. (Article 82)" },
+            { id: "LAB_97", category: "Labor Code", title: "Payment of Wages", text: "Wages shall be paid in legal tender at least once every two weeks or twice a month. (Article 97)" },
+            { id: "LAB_279", category: "Labor Code", title: "Security of Tenure", text: "In cases of regular employment, the employer shall not terminate services except for a just cause. (Article 279)" },
+            
+            // SPECIAL LAWS
+            { id: "RA_10173", category: "Data Privacy", title: "Data Privacy Act of 2012", text: "Protects individuals' personal information in information and communications systems. (Republic Act No. 10173)" },
+            { id: "RA_9262", category: "VAWC", title: "Violence Against Women and Children", text: "Defines violence against women and their children and provides protective measures. (Republic Act No. 9262)" }
+        ];
+        
+        // Display simplified law titles
+        function displayLaws() {
+            lawCount.textContent = PHILIPPINE_LAWS.length;
+            
+            // Group by category
+            const categories = {};
+            PHILIPPINE_LAWS.forEach(law => {
+                if (!categories[law.category]) {
+                    categories[law.category] = [];
+                }
+                categories[law.category].push(law);
+            });
+            
+            let html = '';
+            for (const [category, laws] of Object.entries(categories)) {
+                html += `
+                    <div class="law-category">
+                        <h4>${category}</h4>
+                `;
+                
+                laws.forEach(law => {
+                    html += `
+                        <div class="law-title">${law.title}</div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+            
+            lawsList.innerHTML = html;
+        }
+        
+        // Test API connection (now handles CORS better)
+        async function testApiConnection(apiKey) {
+            try {
+                // Try with CORS mode
+                const response = await fetch('https://api.deepseek.com/v1/models', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors' // Explicitly request CORS
+                });
+                
+                if (response.ok) {
+                    return { success: true, message: "API connection successful" };
+                } else {
+                    const error = await response.json().catch(() => ({}));
+                    return { 
+                        success: false, 
+                        error: error.error?.message || `HTTP ${response.status}` 
+                    };
+                }
+            } catch (error) {
+                // CORS error - we'll still mark as connected for now
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    return { 
+                        success: true, 
+                        message: "Connected (CORS may block actual requests)",
+                        corsIssue: true
+                    };
+                }
+                return { success: false, error: error.message };
+            }
+        }
+        
+        // Connect API
+        async function connectApi() {
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey.startsWith('sk-')) {
+                updateStatus("Invalid Key", false, "Key must start with 'sk-'");
+                return;
+            }
+            
+            connectBtn.textContent = 'Connecting...';
+            connectBtn.disabled = true;
+            updateStatus("Testing connection...", false, "Please wait");
+            
+            const result = await testApiConnection(apiKey);
+            
+            if (result.success) {
+                localStorage.setItem(STORAGE_KEY, apiKey);
+                userApiKey = apiKey;
+                isConnected = true;
+                
+                updateStatus("Connected", true, result.message);
+                connectBtn.style.display = 'none';
+                disconnectBtn.style.display = 'block';
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                apiKeyInput.type = 'password';
+                keyInfo.textContent = `Connected • Key hidden`;
+                
+                // Warn about CORS if detected
+                if (result.corsIssue) {
+                    document.getElementById('chatHistory').innerHTML = `
+                        <div class="message">
+                            <div class="ai-message">⚠️ <strong>CORS Warning:</strong> Your browser may block API requests. Try:<br>
+                            1. Install "Allow CORS" browser extension<br>
+                            2. Or host this file online (GitHub Pages)<br>
+                            <br>You can still try asking questions.
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('chatHistory').innerHTML = `
+                        <div class="message">
+                            <div class="ai-message">✅ Connected! Ask legal questions (e.g., "divorce laws in Philippines").</div>
+                        </div>
+                    `;
+                }
+            } else {
+                updateStatus("Connection Failed", false, result.error);
+                connectBtn.textContent = 'Connect';
+                connectBtn.disabled = false;
+            }
+        }
+        
+        // Disconnect API
+        function disconnectApi() {
+            userApiKey = null;
+            isConnected = false;
+            localStorage.removeItem(STORAGE_KEY);
+            
+            updateStatus("Not Connected", false, "Disconnected");
+            connectBtn.textContent = 'Connect';
+            connectBtn.disabled = false;
+            connectBtn.style.display = 'block';
+            disconnectBtn.style.display = 'none';
+            userInput.disabled = true;
+            sendButton.disabled = true;
+            apiKeyInput.type = 'text';
+            keyInfo.textContent = 'Your key is pre-filled above';
+            
+            document.getElementById('chatHistory').innerHTML = `
+                <div class="message">
+                    <div class="ai-message">Disconnected. Enter your API key to connect again.</div>
+                </div>
+            `;
+        }
+        
+        // Update status
+        function updateStatus(mainText, isConnected, detailText) {
+            statusText.textContent = mainText;
+            statusText.className = `status-text ${isConnected ? 'connected' : 'disconnected'}`;
+            statusDetail.textContent = detailText || "";
+            statusBox.style.borderColor = isConnected ? '#1e6f5c' : '#e9ecef';
+        }
+        
+        // Send message with better error handling
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message || !isConnected || !userApiKey) return;
+            
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.innerHTML += `
+                <div class="message">
+                    <div class="user-message">${message}</div>
+                </div>
+            `;
+            
+            userInput.value = '';
+            sendButton.textContent = 'Thinking...';
+            sendButton.disabled = true;
+            
+            try {
+                // Prepare legal context
+                const lawsContext = PHILIPPINE_LAWS.map(law => 
+                    `[${law.id}: ${law.title}] ${law.text}`
+                ).join('\n\n');
+                
+                const systemPrompt = `You are a Philippine legal expert. Answer using ONLY these embedded laws. If topic not covered, say so.
+
+EMBEDDED PHILIPPINE LAWS:
+${lawsContext}
+
+Question: ${message}
+
+Answer:`;
+                
+                // Add timeout to prevent hanging
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userApiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: message }
+                        ],
+                        max_tokens: 1500,
+                        temperature: 0.3
+                    }),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error?.message || `API Error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                
+                chatHistory.innerHTML += `
+                    <div class="message">
+                        <div class="ai-message">${formatLegalResponse(aiResponse)}</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error("API Error:", error);
+                
+                if (error.name === 'AbortError') {
+                    chatHistory.innerHTML += `
+                        <div class="message">
+                            <div class="ai-message">⏱️ Request timed out. Try again or ask a shorter question.</div>
+                        </div>
+                    `;
+                } else if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                    chatHistory.innerHTML += `
+                        <div class="message">
+                            <div class="ai-message">🌐 <strong>CORS Blocked:</strong> Browser security is blocking the API request.<br><br>
+                            <strong>Quick Fixes:</strong><br>
+                            1. <strong>Chrome Extension:</strong> Install "Allow CORS: Access-Control-Allow-Origin"<br>
+                            2. <strong>Firefox Extension:</strong> "CORS Everywhere"<br>
+                            3. <strong>Host online:</strong> Upload to GitHub Pages (free)<br>
+                            4. <strong>Local server:</strong> Run: <code>npx http-server</code> in folder
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    chatHistory.innerHTML += `
+                        <div class="message">
+                            <div class="ai-message">⚠️ Error: ${error.message}</div>
+                        </div>
+                    `;
+                }
+            } finally {
+                sendButton.textContent = 'Send';
+                sendButton.disabled = false;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+        
+        // Format legal citations
+        function formatLegalResponse(text) {
+            return text.replace(/(CONST|CIV|FAM|LAB|RA)_[A-Za-z0-9_]+/g, 
+                match => `<span style="background:#e7f3ff; padding:2px 6px; border-radius:4px; font-family:monospace;">${match}</span>`);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            displayLaws();
+            
+            const savedKey = localStorage.getItem(STORAGE_KEY);
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+                keyInfo.textContent = 'Saved key found. Click Connect.';
+            }
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey && isConnected) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Auto-connect if key exists
+            if (apiKeyInput.value && apiKeyInput.value.startsWith('sk-')) {
+                setTimeout(connectApi, 500);
+            }
+        });
+    </script>
+</body>
+</html>
