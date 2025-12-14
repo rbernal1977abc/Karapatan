@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html>    
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karapan Pinoy - Legal AI Assistant</title>
+    <title>Karapatan Pinoy - Legal AI Assistant</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -303,7 +303,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Karapan Pinoy</h1>
+            <h1>Karapatan Pinoy</h1>
             <div class="subtitle">Legal AI Assistant for Filipinos</div>
         </div>
         
@@ -326,7 +326,7 @@
             <div class="chat-interface">
                 <div id="chatHistory">
                     <div class="message">
-                        <div class="ai-message">Welcome to Karapan Pinoy Legal AI Assistant. Connect your API key to start asking legal questions about Philippine laws.</div>
+                        <div class="ai-message">Welcome to Karapatan Pinoy Legal AI Assistant. Connect your API key to start asking legal questions about Philippine laws.</div>
                     </div>
                 </div>
                 
@@ -449,7 +449,7 @@
                     connectBtn.className = 'connect-btn connected';
                     connectBtn.disabled = false;
                     
-                    apiStatus.textContent = '✅ Connected to Karapan Pinoy AI';
+                    apiStatus.textContent = '✅ Connected to Karapatan Pinoy AI';
                     apiStatus.className = 'status connected';
                     
                     userInput.disabled = false;
@@ -459,7 +459,7 @@
                     // Update chat
                     document.getElementById('chatHistory').innerHTML = `
                         <div class="message">
-                            <div class="ai-message">✅ Connected successfully to Karapan Pinoy! You can now ask legal questions about Philippine laws.</div>
+                            <div class="ai-message">✅ Connected successfully to Karapatan Pinoy! You can now ask legal questions about Philippine laws.</div>
                         </div>
                     `;
                     
@@ -504,7 +504,7 @@
             
             document.getElementById('chatHistory').innerHTML = `
                 <div class="message">
-                    <div class="ai-message">Disconnected from Karapan Pinoy. Enter your API key and click Connect to resume.</div>
+                    <div class="ai-message">Disconnected from Karapatan Pinoy. Enter your API key and click Connect to resume.</div>
                 </div>
             `;
         }
@@ -548,7 +548,7 @@
                     `[${law.id}: ${law.title}] ${law.text}`
                 ).join('\n\n');
                 
-                const systemPrompt = `You are Karapan Pinoy Legal AI. Answer using ONLY these embedded Philippine laws. Cite law IDs like [CONST_1].
+                const systemPrompt = `You are Karapatan Pinoy Legal AI. Answer using ONLY these embedded Philippine laws. Cite law IDs like [CONST_1].
 
 EMBEDDED PHILIPPINE LAWS:
 ${lawsContext}
@@ -592,7 +592,7 @@ Answer:`;
                 console.error('API Error:', error);
                 chatHistory.innerHTML += `
                     <div class="message">
-                        <div class="ai-message">⚠️ Karapan Pinoy Error: ${error.message}<br><br>
+                        <div class="ai-message">⚠️ Karapatan Pinoy Error: ${error.message}<br><br>
                         <strong>Solution:</strong><br>
                         1. Check if /api/deepseek.js is deployed<br>
                         2. Verify your Vercel URL is correct<br>
