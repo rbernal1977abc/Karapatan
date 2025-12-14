@@ -1,35 +1,29 @@
-// api/deepseek.js
+// SIMPLE proxy that always works
 export default async function handler(req, res) {
-  // Set CORS headers
+  // Allow all origins
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', '*');
   
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
   
-  // Only allow POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-  
   try {
     const { messages, model = 'deepseek-chat', max_tokens = 1000 } = req.body;
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader) {
+      return res.status(401).json({ error: 'No authorization header' });
+    }
     
     const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY || req.headers.authorization?.replace('Bearer ', '')}`
+        'Authorization': authHeader
       },
-      body: JSON.stringify({
-        model,
-        messages,
-        max_tokens,
-        temperature: 0.3
-      })
+      body: JSON.stringify({ model, messages, max_tokens, temperature: 0.3 })
     });
     
     const data = await response.json();
@@ -41,10 +35,10 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
     
   } catch (error) {
-    console.error('Proxy error:', error);
     return res.status(500).json({ 
       error: 'Proxy error', 
-      message: error.message 
+      message: error.message,
+      hint: 'Check Vercel function logs'
     });
   }
 }
