@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/deepseek.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/api/deepseek", "destination": "/api/deepseek.js" }
+  ]
+}
