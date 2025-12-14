@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Philippine Legal AI</title>
+    <title>Karapan Pinoy - Legal AI Assistant</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -16,50 +16,56 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.98);
+            background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
             color: white;
             padding: 30px;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 5px solid #ffd700;
         }
         
         .header h1 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin: 0;
             font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .header .subtitle {
+            margin-top: 10px;
+            font-size: 1.1rem;
             opacity: 0.9;
-            margin-top: 8px;
-            font-size: 1rem;
         }
         
         .main-content {
             padding: 30px;
         }
         
-        /* API Section */
         .api-section {
             background: #f8f9fa;
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 30px;
-            border: 2px solid #e9ecef;
+            border: 2px solid #e0e0e0;
             text-align: center;
+        }
+        
+        .api-section h3 {
+            color: #d32f2f;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
         }
         
         #apiKeyInput {
             width: 100%;
             padding: 15px;
-            border: 2px solid #dee2e6;
+            border: 2px solid #ccc;
             border-radius: 10px;
             margin: 15px 0;
             font-family: monospace;
@@ -69,24 +75,34 @@
         .connect-btn {
             width: 100%;
             padding: 17px;
-            background: #1e3c72;
+            background: #d32f2f;
             color: white;
             border: none;
             border-radius: 10px;
             font-weight: 600;
             font-size: 1.1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             margin-top: 10px;
         }
         
+        .connect-btn:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+        }
+        
         .connect-btn.connected {
-            background: #28a745;
+            background: #388e3c;
+        }
+        
+        .connect-btn.connected:hover {
+            background: #2e7d32;
         }
         
         .connect-btn:disabled {
-            background: #6c757d;
+            background: #757575;
             cursor: not-allowed;
+            transform: none;
         }
         
         .status {
@@ -98,36 +114,35 @@
             font-size: 1rem;
         }
         
-        .connected { 
-            background: #d4edda; 
-            color: #155724; 
-            border: 1px solid #c3e6cb;
+        .status.connected { 
+            background: #e8f5e9; 
+            color: #1b5e20; 
+            border: 2px solid #c8e6c9;
         }
         
-        .disconnected { 
-            background: #f8d7da; 
-            color: #721c24; 
-            border: 1px solid #f5c6cb;
+        .status.disconnected { 
+            background: #ffebee; 
+            color: #c62828; 
+            border: 2px solid #ffcdd2;
         }
         
-        /* Chat Interface */
         .chat-interface {
             background: white;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         #chatHistory {
             height: 350px;
             overflow-y: auto;
             padding: 20px;
-            background: #f8f9fa;
+            background: #fafafa;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e0e0e0;
         }
         
         .message {
@@ -135,18 +150,18 @@
         }
         
         .user-message {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
             color: white;
             padding: 15px 20px;
             border-radius: 20px 20px 0 20px;
             margin-left: auto;
             max-width: 85%;
-            box-shadow: 0 3px 10px rgba(30, 60, 114, 0.2);
+            box-shadow: 0 3px 10px rgba(211, 47, 47, 0.2);
         }
         
         .ai-message {
             background: white;
-            border: 1px solid #e1e5eb;
+            border: 1px solid #e0e0e0;
             padding: 15px 20px;
             border-radius: 20px 20px 20px 0;
             max-width: 85%;
@@ -162,7 +177,7 @@
         #userInput {
             flex: 1;
             padding: 17px;
-            border: 2px solid #dee2e6;
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1rem;
             min-height: 60px;
@@ -171,7 +186,7 @@
         }
         
         #sendButton {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -179,26 +194,38 @@
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #sendButton:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
         }
         
         #sendButton:disabled {
-            background: #a0aec0;
+            background: #9e9e9e;
             cursor: not-allowed;
         }
         
-        /* Laws Section */
         .laws-section {
-            background: #e7f3ff;
+            background: #fff3e0;
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 20px;
-            border-left: 5px solid #1e3c72;
+            border-left: 5px solid #ff9800;
         }
         
         .laws-section h3 {
-            color: #1e3c72;
+            color: #e65100;
             margin-bottom: 20px;
             font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .laws-section h3::before {
+            content: "⚖️";
         }
         
         .law-category {
@@ -206,11 +233,11 @@
         }
         
         .law-category h4 {
-            color: #2a5298;
+            color: #d84315;
             margin-bottom: 10px;
             font-size: 1.1rem;
             padding-bottom: 5px;
-            border-bottom: 2px solid #a8c6ff;
+            border-bottom: 2px solid #ffcc80;
         }
         
         .law-titles {
@@ -225,34 +252,33 @@
             border-radius: 8px;
             font-size: 0.9rem;
             color: #333;
-            border: 1px solid #d1e3ff;
+            border: 1px solid #ffe0b2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
-        /* Footer */
         .footer {
             text-align: center;
             padding: 25px;
-            color: #6c757d;
+            color: #666;
             font-size: 0.9rem;
-            border-top: 1px solid #e9ecef;
-            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            background: #f5f5f5;
         }
         
         .footer .powered-by {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: #1e3c72;
+            color: #d32f2f;
             margin-bottom: 5px;
         }
         
         .footer .secured-by {
             font-size: 1.2rem;
             font-weight: 700;
-            color: #28a745;
+            color: #388e3c;
             letter-spacing: 1px;
         }
         
-        /* Responsive */
         @media (max-width: 768px) {
             .input-area {
                 flex-direction: column;
@@ -277,15 +303,15 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Philippine Legal AI</h1>
-            <div class="subtitle">AI-Powered Legal Reference Assistant</div>
+            <h1>Karapan Pinoy</h1>
+            <div class="subtitle">Legal AI Assistant for Filipinos</div>
         </div>
         
         <div class="main-content">
             <!-- API Configuration -->
             <div class="api-section">
                 <h3>🔐 Secure Connection</h3>
-                <input type="password" id="apiKeyInput" placeholder="Enter your DeepSeek API key" value="sk-27ddf66de4914457af0bdbe1db8cd549">
+                <input type="password" id="apiKeyInput" placeholder="Enter your DeepSeek API key">
                 
                 <button class="connect-btn" id="connectBtn" onclick="toggleConnection()">
                     Connect to AI
@@ -300,12 +326,12 @@
             <div class="chat-interface">
                 <div id="chatHistory">
                     <div class="message">
-                        <div class="ai-message">Welcome to Philippine Legal AI. Connect your API key to start asking legal questions.</div>
+                        <div class="ai-message">Welcome to Karapan Pinoy Legal AI Assistant. Connect your API key to start asking legal questions about Philippine laws.</div>
                     </div>
                 </div>
                 
                 <div class="input-area">
-                    <textarea id="userInput" placeholder="Ask about Philippine law..." disabled></textarea>
+                    <textarea id="userInput" placeholder="Ask about Philippine law (e.g., divorce, annulment, rights, contracts)..." disabled></textarea>
                     <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
                 </div>
             </div>
@@ -341,6 +367,14 @@
                         <div class="law-title">Obligations & Contracts</div>
                     </div>
                 </div>
+                
+                <div class="law-category">
+                    <h4>Labor Code</h4>
+                    <div class="law-titles">
+                        <div class="law-title">Normal Working Hours</div>
+                        <div class="law-title">Security of Tenure</div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -352,8 +386,8 @@
     </div>
 
     <script>
-        // SIMPLE DIRECT API CALL - NO PROXY
-        const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+        // USE THIS PROXY URL - Replace with your actual Vercel URL
+        const PROXY_URL = '/api/deepseek'; // Change to: 'https://your-app.vercel.app/api/deepseek'
         let userApiKey = null;
         let isConnected = false;
         
@@ -387,28 +421,35 @@
             connectBtn.textContent = 'Connecting...';
             connectBtn.disabled = true;
             apiStatus.textContent = 'Testing connection...';
+            apiStatus.className = 'status disconnected';
             
+            userApiKey = apiKey;
+            
+            // Test connection through proxy
             try {
-                // Simple test request
-                const testResponse = await fetch('https://api.deepseek.com/v1/models', {
-                    method: 'GET',
+                const response = await fetch(PROXY_URL, {
+                    method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [{ role: "user", content: "test" }],
+                        max_tokens: 10
+                    })
                 });
                 
-                if (testResponse.ok) {
+                if (response.ok) {
                     isConnected = true;
-                    userApiKey = apiKey;
-                    localStorage.setItem('deepseek_api_key', apiKey);
+                    localStorage.setItem('karapan_api_key', apiKey);
                     
                     // Update UI for connected state
                     connectBtn.textContent = 'Disconnect from AI';
                     connectBtn.className = 'connect-btn connected';
                     connectBtn.disabled = false;
                     
-                    apiStatus.textContent = '✅ Connected to AI';
+                    apiStatus.textContent = '✅ Connected to Karapan Pinoy AI';
                     apiStatus.className = 'status connected';
                     
                     userInput.disabled = false;
@@ -418,24 +459,26 @@
                     // Update chat
                     document.getElementById('chatHistory').innerHTML = `
                         <div class="message">
-                            <div class="ai-message">✅ Connected successfully! You can now ask legal questions about Philippine laws.</div>
+                            <div class="ai-message">✅ Connected successfully to Karapan Pinoy! You can now ask legal questions about Philippine laws.</div>
                         </div>
                     `;
                     
                 } else {
-                    const error = await testResponse.json().catch(() => ({}));
-                    throw new Error(error.error?.message || 'API key rejected');
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'Connection failed');
                 }
                 
             } catch (error) {
                 console.error('Connection error:', error);
+                isConnected = false;
+                userApiKey = null;
                 
                 connectBtn.textContent = 'Connect to AI';
                 connectBtn.className = 'connect-btn';
                 connectBtn.disabled = false;
                 
-                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                    apiStatus.textContent = '❌ CORS blocked. Try:<br>1. Install CORS extension<br>2. Use different browser<br>3. Contact RP8 support';
+                if (error.message.includes('Failed to fetch')) {
+                    apiStatus.innerHTML = '❌ CORS blocked.<br><br>1. Ensure /api/deepseek.js is deployed<br>2. Use correct proxy URL<br>3. Check Vercel logs';
                 } else {
                     apiStatus.textContent = `❌ ${error.message}`;
                 }
@@ -447,12 +490,12 @@
         function disconnectApi() {
             isConnected = false;
             userApiKey = null;
-            localStorage.removeItem('deepseek_api_key');
+            localStorage.removeItem('karapan_api_key');
             
             connectBtn.textContent = 'Connect to AI';
             connectBtn.className = 'connect-btn';
             
-            apiStatus.textContent = 'Disconnected';
+            apiStatus.textContent = 'Disconnected from AI';
             apiStatus.className = 'status disconnected';
             
             userInput.disabled = true;
@@ -461,12 +504,12 @@
             
             document.getElementById('chatHistory').innerHTML = `
                 <div class="message">
-                    <div class="ai-message">Disconnected. Enter API key and click Connect to resume.</div>
+                    <div class="ai-message">Disconnected from Karapan Pinoy. Enter your API key and click Connect to resume.</div>
                 </div>
             `;
         }
         
-        // Send message directly to DeepSeek
+        // Send message through proxy
         async function sendMessage() {
             const message = userInput.value.trim();
             const chatHistory = document.getElementById('chatHistory');
@@ -485,7 +528,7 @@
             sendButton.disabled = true;
             
             try {
-                // Embedded laws for AI context
+                // Embedded Philippine laws (full text for AI)
                 const PHILIPPINE_LAWS = [
                     { id: "CONST_1", title: "Due Process & Equal Protection", text: "No person shall be deprived of life, liberty, or property without due process of law, nor shall any person be denied the equal protection of the laws. (Article III, Section 1)" },
                     { id: "CONST_2", title: "Right Against Unreasonable Searches", text: "The right of the people to be secure in their persons, houses, papers, and effects against unreasonable searches and seizures shall be inviolable. (Article III, Section 2)" },
@@ -495,14 +538,17 @@
                     { id: "FAM_1", title: "Marriage as Special Contract", text: "Marriage is a special contract of permanent union between a man and a woman entered into in accordance with law. (Family Code, Article 1)" },
                     { id: "FAM_45", title: "Grounds for Annulment", text: "A marriage may be annulled for causes including: (1) Lack of parental consent; (2) Insanity; (3) Fraud; (4) Force; (5) Impotence. (Family Code, Article 45)" },
                     { id: "FAM_55", title: "Legal Separation Grounds", text: "Legal separation may be granted for: (1) Repeated physical violence; (2) Drug addiction; (3) Attempt against life; (4) Sexual infidelity. (Family Code, Article 55)" },
-                    { id: "CIV_19", title: "Human Relations Principle", text: "Every person must, in the exercise of his rights and in the performance of his duties, act with justice, give everyone his due, and observe honesty and good faith. (Civil Code, Article 19)" }
+                    { id: "CIV_19", title: "Human Relations Principle", text: "Every person must, in the exercise of his rights and in the performance of his duties, act with justice, give everyone his due, and observe honesty and good faith. (Civil Code, Article 19)" },
+                    { id: "CIV_1156", title: "Definition of Obligation", text: "An obligation is a juridical necessity to give, to do or not to do. (Civil Code, Article 1156)" },
+                    { id: "LAB_82", title: "Normal Working Hours", text: "The normal hours of work of any employee shall not exceed eight (8) hours a day. (Labor Code, Article 82)" },
+                    { id: "LAB_279", title: "Security of Tenure", text: "In cases of regular employment, the employer shall not terminate services except for a just cause. (Labor Code, Article 279)" }
                 ];
                 
                 const lawsContext = PHILIPPINE_LAWS.map(law => 
                     `[${law.id}: ${law.title}] ${law.text}`
                 ).join('\n\n');
                 
-                const systemPrompt = `You are a Philippine legal expert. Answer using ONLY these embedded laws. Cite law IDs like [CONST_1].
+                const systemPrompt = `You are Karapan Pinoy Legal AI. Answer using ONLY these embedded Philippine laws. Cite law IDs like [CONST_1].
 
 EMBEDDED PHILIPPINE LAWS:
 ${lawsContext}
@@ -511,7 +557,7 @@ Question: ${message}
 
 Answer:`;
                 
-                const response = await fetch(DEEPSEEK_API_URL, {
+                const response = await fetch(PROXY_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -529,7 +575,7 @@ Answer:`;
                 });
                 
                 if (!response.ok) {
-                    const error = await response.json().catch(() => ({}));
+                    const error = await response.json();
                     throw new Error(error.error?.message || `API Error: ${response.status}`);
                 }
                 
@@ -544,25 +590,16 @@ Answer:`;
                 
             } catch (error) {
                 console.error('API Error:', error);
-                
-                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                    chatHistory.innerHTML += `
-                        <div class="message">
-                            <div class="ai-message">⚠️ CORS Blocked<br><br>
-                            <strong>Quick Fix:</strong><br>
-                            1. Install "Allow CORS" browser extension<br>
-                            2. Try Chrome instead of Safari<br>
-                            3. Contact RP8 technical support
-                            </div>
+                chatHistory.innerHTML += `
+                    <div class="message">
+                        <div class="ai-message">⚠️ Karapan Pinoy Error: ${error.message}<br><br>
+                        <strong>Solution:</strong><br>
+                        1. Check if /api/deepseek.js is deployed<br>
+                        2. Verify your Vercel URL is correct<br>
+                        3. Check browser console for details
                         </div>
-                    `;
-                } else {
-                    chatHistory.innerHTML += `
-                        <div class="message">
-                            <div class="ai-message">⚠️ Error: ${error.message}</div>
-                        </div>
-                    `;
-                }
+                    </div>
+                `;
             } finally {
                 sendButton.textContent = 'Send';
                 sendButton.disabled = false;
@@ -581,10 +618,18 @@ Answer:`;
             });
             
             // Check for saved API key
-            const savedKey = localStorage.getItem('deepseek_api_key');
+            const savedKey = localStorage.getItem('karapan_api_key');
             if (savedKey) {
                 apiKeyInput.value = savedKey;
                 setTimeout(connectApi, 1000);
+            }
+            
+            // IMPORTANT: Update this to your actual Vercel URL
+            const currentHost = window.location.hostname;
+            if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+                // Uncomment and update with your Vercel URL
+                // PROXY_URL = `https://${currentHost}/api/deepseek`;
+                console.log('Deployed on:', currentHost);
             }
         });
     </script>
