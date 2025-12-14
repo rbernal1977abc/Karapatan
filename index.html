@@ -69,7 +69,7 @@
         .connect-btn {
             width: 100%;
             padding: 17px;
-            background: #1e3c72;
+            background: #28a745; /* Green when connected */
             color: white;
             border: none;
             border-radius: 10px;
@@ -80,13 +80,20 @@
             margin-top: 10px;
         }
         
-        .connect-btn.connected {
-            background: #28a745;
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .connect-btn:disabled {
             background: #6c757d;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .connect-btn.disconnected {
+            background: #1e3c72; /* Blue when disconnected */
         }
         
         .status {
@@ -179,6 +186,12 @@
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #sendButton:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
         }
         
         #sendButton:disabled {
@@ -186,7 +199,7 @@
             cursor: not-allowed;
         }
         
-        /* Laws Section */
+        /* Laws Section - Simplified */
         .laws-section {
             background: #e7f3ff;
             padding: 25px;
@@ -199,6 +212,14 @@
             color: #1e3c72;
             margin-bottom: 20px;
             font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .laws-section h3::before {
+            content: "📚";
+            font-size: 1.2rem;
         }
         
         .law-category {
@@ -226,6 +247,7 @@
             font-size: 0.9rem;
             color: #333;
             border: 1px solid #d1e3ff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         /* Footer */
@@ -285,9 +307,9 @@
             <!-- API Configuration -->
             <div class="api-section">
                 <h3>🔐 Secure Connection</h3>
-                <input type="password" id="apiKeyInput" placeholder="Enter your DeepSeek API key" value="sk-27ddf66de4914457af0bdbe1db8cd549">
+                <input type="password" id="apiKeyInput" placeholder="Enter your DeepSeek API key">
                 
-                <button class="connect-btn" id="connectBtn" onclick="toggleConnection()">
+                <button class="connect-btn disconnected" id="connectBtn" onclick="toggleConnection()">
                     Connect to AI
                 </button>
                 
@@ -300,17 +322,17 @@
             <div class="chat-interface">
                 <div id="chatHistory">
                     <div class="message">
-                        <div class="ai-message">Welcome to Philippine Legal AI. Connect your API key to start asking legal questions.</div>
+                        <div class="ai-message">Welcome to Philippine Legal AI. Connect your API key to start asking legal questions about Philippine laws.</div>
                     </div>
                 </div>
                 
                 <div class="input-area">
-                    <textarea id="userInput" placeholder="Ask about Philippine law..." disabled></textarea>
+                    <textarea id="userInput" placeholder="Ask about Philippine law (e.g., divorce, annulment, rights, contracts)..." disabled></textarea>
                     <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
                 </div>
             </div>
             
-            <!-- Embedded Laws -->
+            <!-- Embedded Laws (Titles Only) -->
             <div class="laws-section">
                 <h3>Embedded Philippine Legal Database</h3>
                 
@@ -341,6 +363,14 @@
                         <div class="law-title">Obligations & Contracts</div>
                     </div>
                 </div>
+                
+                <div class="law-category">
+                    <h4>Labor Code</h4>
+                    <div class="law-titles">
+                        <div class="law-title">Normal Working Hours</div>
+                        <div class="law-title">Security of Tenure</div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -352,8 +382,8 @@
     </div>
 
     <script>
-        // SIMPLE DIRECT API CALL - NO PROXY
-        const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+        // Configuration
+        const PROXY_URL = '/api/deepseek';
         let userApiKey = null;
         let isConnected = false;
         
@@ -387,25 +417,31 @@
             connectBtn.textContent = 'Connecting...';
             connectBtn.disabled = true;
             apiStatus.textContent = 'Testing connection...';
+            apiStatus.className = 'status disconnected';
             
+            userApiKey = apiKey;
+            
+            // Test connection through proxy
             try {
-                // Simple test request
-                const testResponse = await fetch('https://api.deepseek.com/v1/models', {
-                    method: 'GET',
+                const response = await fetch(PROXY_URL, {
+                    method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [{ role: "user", content: "test" }],
+                        max_tokens: 10
+                    })
                 });
                 
-                if (testResponse.ok) {
+                if (response.ok) {
                     isConnected = true;
-                    userApiKey = apiKey;
-                    localStorage.setItem('deepseek_api_key', apiKey);
                     
                     // Update UI for connected state
                     connectBtn.textContent = 'Disconnect from AI';
-                    connectBtn.className = 'connect-btn connected';
+                    connectBtn.className = 'connect-btn'; // Green color
                     connectBtn.disabled = false;
                     
                     apiStatus.textContent = '✅ Connected to AI';
@@ -423,22 +459,20 @@
                     `;
                     
                 } else {
-                    const error = await testResponse.json().catch(() => ({}));
-                    throw new Error(error.error?.message || 'API key rejected');
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'Connection failed');
                 }
                 
             } catch (error) {
                 console.error('Connection error:', error);
+                isConnected = false;
+                userApiKey = null;
                 
                 connectBtn.textContent = 'Connect to AI';
-                connectBtn.className = 'connect-btn';
+                connectBtn.className = 'connect-btn disconnected';
                 connectBtn.disabled = false;
                 
-                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                    apiStatus.textContent = '❌ CORS blocked. Try:<br>1. Install CORS extension<br>2. Use different browser<br>3. Contact RP8 support';
-                } else {
-                    apiStatus.textContent = `❌ ${error.message}`;
-                }
+                apiStatus.textContent = `❌ ${error.message}`;
                 apiStatus.className = 'status disconnected';
             }
         }
@@ -447,26 +481,27 @@
         function disconnectApi() {
             isConnected = false;
             userApiKey = null;
-            localStorage.removeItem('deepseek_api_key');
             
+            // Update UI for disconnected state
             connectBtn.textContent = 'Connect to AI';
-            connectBtn.className = 'connect-btn';
+            connectBtn.className = 'connect-btn disconnected';
             
-            apiStatus.textContent = 'Disconnected';
+            apiStatus.textContent = 'Disconnected from AI';
             apiStatus.className = 'status disconnected';
             
             userInput.disabled = true;
             sendButton.disabled = true;
             apiKeyInput.type = 'text';
             
+            // Clear chat and show disconnect message
             document.getElementById('chatHistory').innerHTML = `
                 <div class="message">
-                    <div class="ai-message">Disconnected. Enter API key and click Connect to resume.</div>
+                    <div class="ai-message">Disconnected. Enter your API key and click Connect to resume.</div>
                 </div>
             `;
         }
         
-        // Send message directly to DeepSeek
+        // Send message through proxy
         async function sendMessage() {
             const message = userInput.value.trim();
             const chatHistory = document.getElementById('chatHistory');
@@ -485,7 +520,7 @@
             sendButton.disabled = true;
             
             try {
-                // Embedded laws for AI context
+                // Embedded Philippine laws (full text for AI)
                 const PHILIPPINE_LAWS = [
                     { id: "CONST_1", title: "Due Process & Equal Protection", text: "No person shall be deprived of life, liberty, or property without due process of law, nor shall any person be denied the equal protection of the laws. (Article III, Section 1)" },
                     { id: "CONST_2", title: "Right Against Unreasonable Searches", text: "The right of the people to be secure in their persons, houses, papers, and effects against unreasonable searches and seizures shall be inviolable. (Article III, Section 2)" },
@@ -495,14 +530,17 @@
                     { id: "FAM_1", title: "Marriage as Special Contract", text: "Marriage is a special contract of permanent union between a man and a woman entered into in accordance with law. (Family Code, Article 1)" },
                     { id: "FAM_45", title: "Grounds for Annulment", text: "A marriage may be annulled for causes including: (1) Lack of parental consent; (2) Insanity; (3) Fraud; (4) Force; (5) Impotence. (Family Code, Article 45)" },
                     { id: "FAM_55", title: "Legal Separation Grounds", text: "Legal separation may be granted for: (1) Repeated physical violence; (2) Drug addiction; (3) Attempt against life; (4) Sexual infidelity. (Family Code, Article 55)" },
-                    { id: "CIV_19", title: "Human Relations Principle", text: "Every person must, in the exercise of his rights and in the performance of his duties, act with justice, give everyone his due, and observe honesty and good faith. (Civil Code, Article 19)" }
+                    { id: "CIV_19", title: "Human Relations Principle", text: "Every person must, in the exercise of his rights and in the performance of his duties, act with justice, give everyone his due, and observe honesty and good faith. (Civil Code, Article 19)" },
+                    { id: "CIV_1156", title: "Definition of Obligation", text: "An obligation is a juridical necessity to give, to do or not to do. (Civil Code, Article 1156)" },
+                    { id: "LAB_82", title: "Normal Working Hours", text: "The normal hours of work of any employee shall not exceed eight (8) hours a day. (Labor Code, Article 82)" },
+                    { id: "LAB_279", title: "Security of Tenure", text: "In cases of regular employment, the employer shall not terminate services except for a just cause. (Labor Code, Article 279)" }
                 ];
                 
                 const lawsContext = PHILIPPINE_LAWS.map(law => 
                     `[${law.id}: ${law.title}] ${law.text}`
                 ).join('\n\n');
                 
-                const systemPrompt = `You are a Philippine legal expert. Answer using ONLY these embedded laws. Cite law IDs like [CONST_1].
+                const systemPrompt = `You are a Philippine legal expert. Answer using ONLY these embedded laws. Cite law IDs like [CONST_1]. If topic not covered, say so.
 
 EMBEDDED PHILIPPINE LAWS:
 ${lawsContext}
@@ -511,7 +549,7 @@ Question: ${message}
 
 Answer:`;
                 
-                const response = await fetch(DEEPSEEK_API_URL, {
+                const response = await fetch(PROXY_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -529,7 +567,7 @@ Answer:`;
                 });
                 
                 if (!response.ok) {
-                    const error = await response.json().catch(() => ({}));
+                    const error = await response.json();
                     throw new Error(error.error?.message || `API Error: ${response.status}`);
                 }
                 
@@ -544,25 +582,11 @@ Answer:`;
                 
             } catch (error) {
                 console.error('API Error:', error);
-                
-                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                    chatHistory.innerHTML += `
-                        <div class="message">
-                            <div class="ai-message">⚠️ CORS Blocked<br><br>
-                            <strong>Quick Fix:</strong><br>
-                            1. Install "Allow CORS" browser extension<br>
-                            2. Try Chrome instead of Safari<br>
-                            3. Contact RP8 technical support
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    chatHistory.innerHTML += `
-                        <div class="message">
-                            <div class="ai-message">⚠️ Error: ${error.message}</div>
-                        </div>
-                    `;
-                }
+                chatHistory.innerHTML += `
+                    <div class="message">
+                        <div class="ai-message">⚠️ Error: ${error.message}</div>
+                    </div>
+                `;
             } finally {
                 sendButton.textContent = 'Send';
                 sendButton.disabled = false;
@@ -584,7 +608,7 @@ Answer:`;
             const savedKey = localStorage.getItem('deepseek_api_key');
             if (savedKey) {
                 apiKeyInput.value = savedKey;
-                setTimeout(connectApi, 1000);
+                setTimeout(connectApi, 500);
             }
         });
     </script>
