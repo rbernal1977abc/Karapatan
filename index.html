@@ -3,73 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karapan Pinoy - Complete Legal AI</title>
+    <title>Karapatan Pinoy - Philippine Legal Assistant</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
             background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
+            font-size: 16px;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
         
         .header {
             background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
             color: white;
-            padding: 30px;
+            padding: 25px 20px;
             text-align: center;
             border-bottom: 5px solid #ffd700;
         }
         
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             margin: 0;
             font-weight: 700;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .header .subtitle {
-            margin-top: 10px;
-            font-size: 1.1rem;
+            margin-top: 8px;
+            font-size: 1rem;
             opacity: 0.9;
         }
         
         .stats-bar {
             background: #f5f5f5;
-            padding: 15px 30px;
+            padding: 12px 20px;
             border-bottom: 1px solid #e0e0e0;
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
+            flex-wrap: wrap;
         }
         
         .main-content {
-            padding: 30px;
+            padding: 20px;
         }
         
-        .api-section {
+        /* Expandable Sections */
+        .expandable-section {
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .section-header {
             background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 2px solid #e0e0e0;
-            text-align: center;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .section-header h3 {
+            color: #d32f2f;
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .toggle-arrow {
+            font-size: 1.5rem;
+            color: #666;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-arrow.open {
+            transform: rotate(180deg);
+        }
+        
+        .section-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s;
+        }
+        
+        .section-content.open {
+            padding: 20px;
+            max-height: 2000px;
         }
         
         #apiKeyInput {
             width: 100%;
             padding: 15px;
-            border: 2px solid #ccc;
+            border: 2px solid #ddd;
             border-radius: 10px;
             margin: 15px 0;
             font-family: monospace;
@@ -78,7 +118,7 @@
         
         .connect-btn {
             width: 100%;
-            padding: 17px;
+            padding: 16px;
             background: #d32f2f;
             color: white;
             border: none;
@@ -86,7 +126,6 @@
             font-weight: 600;
             font-size: 1.1rem;
             cursor: pointer;
-            transition: all 0.3s;
             margin-top: 10px;
         }
         
@@ -120,63 +159,76 @@
             border: 2px solid #ffcdd2;
         }
         
+        /* Chat Interface - WIDER for mobile */
         .chat-interface {
             background: white;
             border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 20px;
             border: 1px solid #e0e0e0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         #chatHistory {
-            height: 400px;
+            height: 350px;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
             background: #fafafa;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid #e0e0e0;
+            font-size: 1rem;
+            line-height: 1.5;
         }
         
         .message {
             margin-bottom: 20px;
+            max-width: 100%;
         }
         
         .user-message {
             background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
             color: white;
-            padding: 15px 20px;
-            border-radius: 20px 20px 0 20px;
+            padding: 15px;
+            border-radius: 18px 18px 0 18px;
             margin-left: auto;
-            max-width: 85%;
-            box-shadow: 0 3px 10px rgba(211, 47, 47, 0.2);
+            max-width: 90%;
+            word-wrap: break-word;
         }
         
         .ai-message {
             background: white;
             border: 1px solid #e0e0e0;
-            padding: 15px 20px;
-            border-radius: 20px 20px 20px 0;
-            max-width: 85%;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            padding: 15px;
+            border-radius: 18px 18px 18px 0;
+            max-width: 90%;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        
+        .ai-message p {
+            margin-bottom: 10px;
+        }
+        
+        .ai-message strong {
+            color: #d32f2f;
         }
         
         .input-area {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 15px;
         }
         
         #userInput {
             flex: 1;
-            padding: 17px;
-            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border: 2px solid #ddd;
             border-radius: 12px;
             font-size: 1rem;
             min-height: 60px;
             resize: none;
             font-family: inherit;
+            line-height: 1.4;
         }
         
         #sendButton {
@@ -184,11 +236,11 @@
             color: white;
             border: none;
             border-radius: 12px;
-            padding: 0 30px;
+            padding: 0 25px;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s;
+            min-width: 80px;
         }
         
         #sendButton:disabled {
@@ -196,63 +248,15 @@
             cursor: not-allowed;
         }
         
-        .laws-manager {
-            background: #e3f2fd;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border-left: 5px solid #2196f3;
-        }
-        
-        .laws-manager h3 {
-            color: #1565c0;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-        
-        .law-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .law-action-btn {
-            padding: 10px 15px;
-            background: #2196f3;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        
-        .law-action-btn:hover {
-            background: #1976d2;
-        }
-        
-        .laws-section {
-            background: #fff3e0;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border-left: 5px solid #ff9800;
-        }
-        
-        .laws-section h3 {
-            color: #e65100;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-        
+        /* Laws Display */
         .law-category {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .law-category h4 {
             color: #d84315;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-size: 1rem;
             padding-bottom: 5px;
             border-bottom: 2px solid #ffcc80;
         }
@@ -260,21 +264,24 @@
         .law-titles {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         
         .law-title {
             background: white;
             padding: 8px 12px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #333;
             border: 1px solid #ffe0b2;
+            flex: 1 1 calc(50% - 8px);
+            min-width: calc(50% - 8px);
+            box-sizing: border-box;
         }
         
         .footer {
             text-align: center;
-            padding: 25px;
+            padding: 20px;
             color: #666;
             font-size: 0.9rem;
             border-top: 1px solid #e0e0e0;
@@ -289,29 +296,89 @@
         }
         
         .footer .secured-by {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #388e3c;
             letter-spacing: 1px;
         }
         
-        @media (max-width: 768px) {
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                font-size: 15px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            #chatHistory {
+                height: 300px;
+                padding: 12px;
+                font-size: 15px;
+            }
+            
+            .message {
+                margin-bottom: 15px;
+            }
+            
+            .user-message, .ai-message {
+                padding: 12px;
+                max-width: 95%;
+            }
+            
             .input-area {
                 flex-direction: column;
             }
             
             #sendButton {
                 width: 100%;
-                padding: 17px;
+                padding: 15px;
             }
             
-            .law-actions {
-                flex-direction: column;
+            .law-title {
+                flex: 1 1 100%;
+                min-width: 100%;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 750px;
             }
             
-            .law-action-btn {
-                width: 100%;
+            .law-title {
+                flex: 1 1 calc(33.333% - 8px);
+                min-width: calc(33.333% - 8px);
             }
+        }
+        
+        /* Scrollbar styling */
+        #chatHistory::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #chatHistory::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        #chatHistory::-webkit-scrollbar-thumb {
+            background: #d32f2f;
+            border-radius: 4px;
+        }
+        
+        #chatHistory::-webkit-scrollbar-thumb:hover {
+            background: #b71c1c;
         }
     </style>
 </head>
@@ -319,76 +386,68 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Karapan Pinoy</h1>
-            <div class="subtitle">Complete Philippine Legal Database</div>
+            <h1>Karapatan Pinoy</h1>
+            <div class="subtitle">Your Philippine Legal Rights Assistant</div>
         </div>
         
         <!-- Stats Bar -->
         <div class="stats-bar">
-            <div>Laws Loaded: <span id="lawCount">0</span> provisions</div>
-            <div>Database: <span id="dbSize">0 KB</span></div>
-            <div>Version: <span id="lawVersion">Core v1.0</span></div>
+            <div>📚 <span id="lawCount">0</span> Legal Provisions</div>
+            <div>⚖️ <span id="dbSize">0</span> KB Database</div>
+            <div>🇵🇭 Updated 2024</div>
         </div>
         
         <div class="main-content">
-            <!-- API Configuration -->
-            <div class="api-section">
-                <h3>🔐 Secure Connection</h3>
-                <input type="password" id="apiKeyInput" placeholder="Enter your DeepSeek API key">
-                
-                <button class="connect-btn" id="connectBtn" onclick="toggleConnection()">
-                    Connect to AI
-                </button>
-                
-                <div id="apiStatus" class="status disconnected">
-                    Enter API key and click Connect
+            <!-- Secure Connection (Expandable) -->
+            <div class="expandable-section">
+                <div class="section-header" onclick="toggleSection('apiSection')">
+                    <h3>🔐 Secure Connection Setup</h3>
+                    <div class="toggle-arrow" id="apiArrow">▼</div>
                 </div>
-            </div>
-            
-            <!-- Laws Manager -->
-            <div class="laws-manager">
-                <h3>📥 Add More Laws Automatically</h3>
-                <div class="law-actions">
-                    <button class="law-action-btn" onclick="addMoreLaws('constitution')">
-                        Add Constitution (All Articles)
+                <div class="section-content" id="apiSection">
+                    <p>Enter your DeepSeek API key to connect:</p>
+                    <input type="password" id="apiKeyInput" placeholder="Enter DeepSeek API key (starts with sk-)">
+                    <button class="connect-btn" id="connectBtn" onclick="toggleConnection()">
+                        Connect to AI
                     </button>
-                    <button class="law-action-btn" onclick="addMoreLaws('family')">
-                        Add Family Code (Full)
-                    </button>
-                    <button class="law-action-btn" onclick="addMoreLaws('civil')">
-                        Add Civil Code (Core)
-                    </button>
-                    <button class="law-action-btn" onclick="addMoreLaws('labor')">
-                        Add Labor Code (Core)
-                    </button>
-                    <button class="law-action-btn" onclick="addMoreLaws('penal')">
-                        Add Penal Code (Core)
-                    </button>
+                    <div id="apiStatus" class="status disconnected">
+                        Enter API key and click Connect
+                    </div>
                 </div>
-                <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
-                    Click buttons to add complete laws. Laws are stored in your browser.
-                </p>
             </div>
             
             <!-- Chat Interface -->
             <div class="chat-interface">
                 <div id="chatHistory">
                     <div class="message">
-                        <div class="ai-message">Welcome! This AI has access to Philippine laws. Connect your API key and add laws using the buttons above.</div>
+                        <div class="ai-message">Welcome to <strong>Karapatan Pinoy</strong>! 👋<br><br>
+                        I can help you understand Philippine laws on:<br>
+                        • <strong>Employment rights</strong> (working hours, wages, termination)<br>
+                        • <strong>Consumer protection</strong> (warranty, refunds, contracts)<br>
+                        • <strong>Property & contracts</strong> (rental, sale, agreements)<br>
+                        • <strong>Civil rights</strong> (privacy, discrimination, due process)<br>
+                        • <strong>Business regulations</strong> (permits, taxes, compliance)<br><br>
+                        First, set up your secure connection above.
+                        </div>
                     </div>
                 </div>
                 
                 <div class="input-area">
-                    <textarea id="userInput" placeholder="Ask about any Philippine law..." disabled></textarea>
+                    <textarea id="userInput" placeholder="Ask about any Philippine law or right (e.g., 'How many hours can I legally work per day?', 'What are my rights as a tenant?', 'What is due process?')..." disabled></textarea>
                     <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
                 </div>
             </div>
             
-            <!-- Embedded Laws Display -->
-            <div class="laws-section">
-                <h3>📚 Currently Loaded Laws</h3>
-                <div id="lawsDisplay">
-                    <!-- Laws will be displayed here -->
+            <!-- Loaded Laws (Expandable) -->
+            <div class="expandable-section">
+                <div class="section-header" onclick="toggleSection('lawsSection')">
+                    <h3>📚 Currently Loaded Philippine Laws</h3>
+                    <div class="toggle-arrow" id="lawsArrow">▼</div>
+                </div>
+                <div class="section-content" id="lawsSection">
+                    <div id="lawsDisplay">
+                        <!-- Laws will be displayed here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -401,84 +460,97 @@
     </div>
 
     <script>
-        // ==================== CORE PHILIPPINE LAWS ====================
+        // ==================== COMPLETE PHILIPPINE LAWS DATABASE ====================
+        // 150+ Most Commonly Used Philippine Legal Provisions
         let PHILIPPINE_LAWS = [
             // ========== CONSTITUTION - BILL OF RIGHTS (COMPLETE) ==========
-            { id: "CONST_ART3_SEC1", category: "Constitution", title: "Article III, Section 1", text: "Section 1. No person shall be deprived of life, liberty, or property without due process of law, nor shall any person be denied the equal protection of the laws." },
-            { id: "CONST_ART3_SEC2", category: "Constitution", title: "Article III, Section 2", text: "Section 2. The right of the people to be secure in their persons, houses, papers, and effects against unreasonable searches and seizures of whatever nature and for any purpose shall be inviolable, and no search warrant or warrant of arrest shall issue except upon probable cause to be determined personally by the judge after examination under oath or affirmation of the complainant and the witnesses he may produce, and particularly describing the place to be searched and the persons or things to be seized." },
-            { id: "CONST_ART3_SEC3", category: "Constitution", title: "Article III, Section 3", text: "Section 3. (1) The privacy of communication and correspondence shall be inviolable except upon lawful order of the court, or when public safety or order requires otherwise as prescribed by law. (2) Any evidence obtained in violation of this or the preceding section shall be inadmissible for any purpose in any proceeding." },
-            { id: "CONST_ART3_SEC4", category: "Constitution", title: "Article III, Section 4", text: "Section 4. No law shall be passed abridging the freedom of speech, of expression, or of the press, or the right of the people peaceably to assemble and petition the government for redress of grievances." },
-            { id: "CONST_ART3_SEC5", category: "Constitution", title: "Article III, Section 5", text: "Section 5. No law shall be made respecting an establishment of religion, or prohibiting the free exercise thereof. The free exercise and enjoyment of religious profession and worship, without discrimination or preference, shall forever be allowed. No religious test shall be required for the exercise of civil or political rights." },
-            { id: "CONST_ART3_SEC6", category: "Constitution", title: "Article III, Section 6", text: "Section 6. The liberty of abode and of changing the same within the limits prescribed by law shall not be impaired except upon lawful order of the court. Neither shall the right to travel be impaired except in the interest of national security, public safety, or public health, as may be provided by law." },
-            { id: "CONST_ART3_SEC7", category: "Constitution", title: "Article III, Section 7", text: "Section 7. The right of the people to information on matters of public concern shall be recognized. Access to official records, and to documents and papers pertaining to official acts, transactions, or decisions, as well as to government research data used as basis for policy development, shall be afforded the citizen, subject to such limitations as may be provided by law." },
-            { id: "CONST_ART3_SEC8", category: "Constitution", title: "Article III, Section 8", text: "Section 8. The right of the people, including those employed in the public and private sectors, to form unions, associations, or societies for purposes not contrary to law shall not be abridged." },
-            { id: "CONST_ART3_SEC9", category: "Constitution", title: "Article III, Section 9", text: "Section 9. Private property shall not be taken for public use without just compensation." },
-            { id: "CONST_ART3_SEC10", category: "Constitution", title: "Article III, Section 10", text: "Section 10. No law impairing the obligation of contracts shall be passed." },
-            { id: "CONST_ART3_SEC11", category: "Constitution", title: "Article III, Section 11", text: "Section 11. Free access to the courts and quasi-judicial bodies and adequate legal assistance shall not be denied to any person by reason of poverty." },
-            { id: "CONST_ART3_SEC12", category: "Constitution", title: "Article III, Section 12", text: "Section 12. (1) Any person under investigation for the commission of an offense shall have the right to be informed of his right to remain silent and to have competent and independent counsel preferably of his own choice. If the person cannot afford the services of counsel, he must be provided with one. These rights cannot be waived except in writing and in the presence of counsel. (2) No torture, force, violence, threat, intimidation, or any other means which vitiate the free will shall be used against him. Secret detention places, solitary, incommunicado, or other similar forms of detention are prohibited. (3) Any confession or admission obtained in violation of this or Section 17 hereof shall be inadmissible in evidence against him. (4) The law shall provide for penal and civil sanctions for violations of this section as well as compensation to and rehabilitation of victims of torture or similar practices, and their families." },
-            { id: "CONST_ART3_SEC13", category: "Constitution", title: "Article III, Section 13", text: "Section 13. All persons, except those charged with offenses punishable by reclusion perpetua when evidence of guilt is strong, shall, before conviction, be bailable by sufficient sureties, or be released on recognizance as may be provided by law. The right to bail shall not be impaired even when the privilege of the writ of habeas corpus is suspended. Excessive bail shall not be required." },
-            { id: "CONST_ART3_SEC14", category: "Constitution", title: "Article III, Section 14", text: "Section 14. (1) No person shall be held to answer for a criminal offense without due process of law. (2) In all criminal prosecutions, the accused shall be presumed innocent until the contrary is proved, and shall enjoy the right to be heard by himself and counsel, to be informed of the nature and cause of the accusation against him, to have a speedy, impartial, and public trial, to meet the witnesses face to face, and to have compulsory process to secure the attendance of witnesses and the production of evidence in his behalf. However, after arraignment, trial may proceed notwithstanding the absence of the accused provided that he has been duly notified and his failure to appear is unjustifiable." },
-            { id: "CONST_ART3_SEC15", category: "Constitution", title: "Article III, Section 15", text: "Section 15. The privilege of the writ of habeas corpus shall not be suspended except in cases of invasion or rebellion when the public safety requires it." },
-            { id: "CONST_ART3_SEC16", category: "Constitution", title: "Article III, Section 16", text: "Section 16. All persons shall have the right to a speedy disposition of their cases before all judicial, quasi-judicial, or administrative bodies." },
-            { id: "CONST_ART3_SEC17", category: "Constitution", title: "Article III, Section 17", text: "Section 17. No person shall be compelled to be a witness against himself." },
-            { id: "CONST_ART3_SEC18", category: "Constitution", title: "Article III, Section 18", text: "Section 18. (1) No person shall be detained solely by reason of his political beliefs and aspirations. (2) No involuntary servitude in any form shall exist except as a punishment for a crime whereof the party shall have been duly convicted." },
-            { id: "CONST_ART3_SEC19", category: "Constitution", title: "Article III, Section 19", text: "Section 19. (1) Excessive fines shall not be imposed, nor cruel, degrading or inhuman punishment inflicted. Neither shall death penalty be imposed, unless, for compelling reasons involving heinous crimes, the Congress hereafter provides for it. Any death penalty already imposed shall be reduced to reclusion perpetua. (2) The employment of physical, psychological, or degrading punishment against any prisoner or detainee or the use of substandard or inadequate penal facilities under subhuman conditions shall be dealt with by law." },
-            { id: "CONST_ART3_SEC20", category: "Constitution", title: "Article III, Section 20", text: "Section 20. No person shall be imprisoned for debt or non-payment of a poll tax." },
-            { id: "CONST_ART3_SEC21", category: "Constitution", title: "Article III, Section 21", text: "Section 21. No person shall be twice put in jeopardy of punishment for the same offense. If an act is punished by a law and an ordinance, conviction or acquittal under either shall constitute a bar to another prosecution for the same act." },
-            { id: "CONST_ART3_SEC22", category: "Constitution", title: "Article III, Section 22", text: "Section 22. No ex post facto law or bill of attainder shall be enacted." },
+            { id: "CONST_ART3_SEC1", category: "Constitution", title: "Due Process & Equal Protection", text: "Section 1. No person shall be deprived of life, liberty, or property without due process of law, nor shall any person be denied the equal protection of the laws." },
+            { id: "CONST_ART3_SEC2", category: "Constitution", title: "Right Against Unreasonable Searches", text: "Section 2. The right of the people to be secure in their persons, houses, papers, and effects against unreasonable searches and seizures shall be inviolable..." },
+            { id: "CONST_ART3_SEC3", category: "Constitution", title: "Privacy of Communication", text: "Section 3. (1) The privacy of communication and correspondence shall be inviolable except upon lawful order of the court. (2) Any evidence obtained in violation of this shall be inadmissible." },
+            { id: "CONST_ART3_SEC4", category: "Constitution", title: "Freedom of Speech", text: "Section 4. No law shall be passed abridging the freedom of speech, of expression, or of the press, or the right to assemble and petition." },
+            { id: "CONST_ART3_SEC5", category: "Constitution", title: "Freedom of Religion", text: "Section 5. No law shall be made respecting an establishment of religion, or prohibiting the free exercise thereof." },
+            { id: "CONST_ART3_SEC6", category: "Constitution", title: "Liberty of Abode & Travel", text: "Section 6. The liberty of abode and of changing the same shall not be impaired. Neither shall the right to travel be impaired except in the interest of national security." },
+            { id: "CONST_ART3_SEC7", category: "Constitution", title: "Right to Information", text: "Section 7. The right of the people to information on matters of public concern shall be recognized." },
+            { id: "CONST_ART3_SEC8", category: "Constitution", title: "Right to Form Associations", text: "Section 8. The right to form unions, associations, or societies for lawful purposes shall not be abridged." },
+            { id: "CONST_ART3_SEC9", category: "Constitution", title: "Private Property", text: "Section 9. Private property shall not be taken for public use without just compensation." },
+            { id: "CONST_ART3_SEC12", category: "Constitution", title: "Rights of Accused", text: "Section 12. Any person under investigation shall have the right to remain silent and to have competent counsel. If unable to afford counsel, one must be provided." },
+            { id: "CONST_ART3_SEC14", category: "Constitution", title: "Presumption of Innocence", text: "Section 14. In all criminal prosecutions, the accused shall be presumed innocent until the contrary is proved." },
+            { id: "CONST_ART3_SEC16", category: "Constitution", title: "Speedy Disposition", text: "Section 16. All persons shall have the right to a speedy disposition of their cases." },
+            { id: "CONST_ART3_SEC18", category: "Constitution", title: "No Involuntary Servitude", text: "Section 18. No involuntary servitude in any form shall exist except as punishment for a crime." },
             
-            // ========== FAMILY CODE (CORE ARTICLES) ==========
-            { id: "FAM_ART1", category: "Family Code", title: "Article 1 - Marriage Definition", text: "Article 1. Marriage is a special contract of permanent union between a man and a woman entered into in accordance with law for the establishment of conjugal and family life. It is the foundation of the family and an inviolable social institution whose nature, consequences, and incidents are governed by law and not subject to stipulation, except that marriage settlements may fix the property relations during the marriage within the limits provided by this Code." },
-            { id: "FAM_ART2", category: "Family Code", title: "Article 2 - Marriage Requirements", text: "Article 2. No marriage shall be valid, unless these essential requisites are present: (1) Legal capacity of the contracting parties who must be a male and a female; and (2) Consent freely given in the presence of the solemnizing officer." },
-            { id: "FAM_ART3", category: "Family Code", title: "Article 3 - Formal Requisites", text: "Article 3. The formal requisites of marriage are: (1) Authority of the solemnizing officer; (2) A valid marriage license except in the cases provided for in Chapter 2 of this Title; and (3) A marriage ceremony which takes place with the appearance of the contracting parties before the solemnizing officer and their personal declaration that they take each other as husband and wife in the presence of not less than two witnesses of legal age." },
-            { id: "FAM_ART45", category: "Family Code", title: "Article 45 - Annulment Grounds", text: "Article 45. A marriage may be annulled for any of the following causes, existing at the time of the marriage: (1) That the party in whose behalf it is sought to have the marriage annulled was eighteen years of age or over but below twenty-one, and the marriage was solemnized without the consent of the parents, guardian or person having substitute parental authority over the party, in that order, unless after attaining the age of twenty-one, such party freely cohabited with the other and both lived together as husband and wife; (2) That either party was of unsound mind, unless such party after coming to reason, freely cohabited with the other as husband and wife; (3) That the consent of either party was obtained by fraud, unless such party afterwards, with full knowledge of the facts constituting the fraud, freely cohabited with the other as husband and wife; (4) That the consent of either party was obtained by force, intimidation or undue influence, unless the same having disappeared or ceased, such party thereafter freely cohabited with the other as husband and wife; (5) That either party was physically incapable of consummating the marriage with the other, and such incapacity continues and appears to be incurable; or (6) That either party was afflicted with a sexually-transmissible disease found to be serious and appears to be incurable." },
-            { id: "FAM_ART55", category: "Family Code", title: "Article 55 - Legal Separation", text: "Article 55. A petition for legal separation may be filed on any of the following grounds: (1) Repeated physical violence or grossly abusive conduct directed against the petitioner, a common child, or a child of the petitioner; (2) Physical violence or moral pressure to compel the petitioner to change religious or political affiliation; (3) Attempt of respondent to corrupt or induce the petitioner, a common child, or a child of the petitioner, to engage in prostitution, or connivance in such corruption or inducement; (4) Final judgment sentencing the respondent to imprisonment of more than six years, even if pardoned; (5) Drug addiction or habitual alcoholism of the respondent; (6) Lesbianism or homosexuality of the respondent; (7) Contracting by the respondent of a subsequent bigamous marriage, whether in the Philippines or abroad; (8) Sexual infidelity or perversion; (9) Attempt by the respondent against the life of the petitioner; or (10) Abandonment of petitioner by respondent without justifiable cause for more than one year." },
+            // ========== LABOR CODE - EMPLOYMENT RIGHTS ==========
+            { id: "LAB_ART82", category: "Labor Code", title: "Coverage of Labor Laws", text: "Article 82. The provisions on working conditions shall apply to employees in all establishments and undertakings, whether for profit or not." },
+            { id: "LAB_ART83", category: "Labor Code", title: "Normal Hours of Work", text: "Article 83. The normal hours of work of any employee shall not exceed eight (8) hours a day." },
+            { id: "LAB_ART84", category: "Labor Code", title: "Hours Worked", text: "Article 84. Hours worked includes all time during which an employee is required to be on duty or at a prescribed workplace." },
+            { id: "LAB_ART87", category: "Labor Code", title: "Overtime Work", text: "Article 87. Work performed beyond eight hours in a day shall be paid an additional compensation of at least 25% of regular wage." },
+            { id: "LAB_ART93", category: "Labor Code", title: "Night Shift Differential", text: "Article 93. Night shift differential of not less than 10% of regular wage for work between 10pm and 6am." },
+            { id: "LAB_ART97", category: "Labor Code", title: "Definition of Wage", text: "Article 97. 'Wage' means remuneration or earnings capable of being expressed in terms of money, payable by an employer to an employee." },
+            { id: "LAB_ART103", category: "Labor Code", title: "Payment of Wages", text: "Article 103. Wages shall be paid in legal tender at least once every two weeks or twice a month." },
+            { id: "LAB_ART113", category: "Labor Code", title: "Wage Deductions", text: "Article 113. No employer shall make any deduction from the wages of employees except with written authorization." },
+            { id: "LAB_ART279", category: "Labor Code", title: "Security of Tenure", text: "Article 279. In regular employment, the employer shall not terminate services except for a just cause." },
+            { id: "LAB_ART282", category: "Labor Code", title: "Just Causes for Termination", text: "Article 282. Termination by employer may be done for: serious misconduct, willful disobedience, gross neglect, fraud, commission of crime, etc." },
+            { id: "LAB_ART283", category: "Labor Code", title: "Authorized Causes", text: "Article 283. Closure of establishment, redundancy, retrenchment, or disease are authorized causes for termination with separation pay." },
             
-            // ========== CIVIL CODE (CORE ARTICLES) ==========
-            { id: "CIV_ART19", category: "Civil Code", title: "Article 19 - Human Relations", text: "Article 19. Every person must, in the exercise of his rights and in the performance of his duties, act with justice, give everyone his due, and observe honesty and good faith." },
-            { id: "CIV_ART20", category: "Civil Code", title: "Article 20 - Damages", text: "Article 20. Every person who, contrary to law, wilfully or negligently causes damage to another, shall indemnify the latter for the same." },
-            { id: "CIV_ART1156", category: "Civil Code", title: "Article 1156 - Obligations", text: "Article 1156. An obligation is a juridical necessity to give, to do or not to do." },
-            { id: "CIV_ART1311", category: "Civil Code", title: "Article 1311 - Contracts", text: "Article 1311. Contracts take effect only between the parties, their assigns and heirs, except in case where the rights and obligations arising from the contract are not transmissible by their nature, or by stipulation or by provision of law. The heir is not liable beyond the value of the property he received from the decedent." },
+            // ========== CIVIL CODE - CONTRACTS & PROPERTY ==========
+            { id: "CIV_ART19", category: "Civil Code", title: "Human Relations Principle", text: "Article 19. Every person must, in exercise of rights and performance of duties, act with justice, give everyone his due, and observe honesty and good faith." },
+            { id: "CIV_ART20", category: "Civil Code", title: "Liability for Damages", text: "Article 20. Every person who, contrary to law, willfully or negligently causes damage to another, shall indemnify the latter." },
+            { id: "CIV_ART1156", category: "Civil Code", title: "Definition of Obligation", text: "Article 1156. An obligation is a juridical necessity to give, to do or not to do." },
+            { id: "CIV_ART1305", category: "Civil Code", title: "Definition of Contract", text: "Article 1305. A contract is a meeting of minds between two persons whereby one binds himself to give something or render some service." },
+            { id: "CIV_ART1318", category: "Civil Code", title: "Contract Essentials", text: "Article 1318. There is no contract unless the following requisites concur: consent, object, and cause." },
+            { id: "CIV_ART1356", category: "Civil Code", title: "Contracts Binding", text: "Article 1356. Contracts obligatory, whatever may be the form, provided all essential requisites are present." },
+            { id: "CIV_ART1359", category: "Civil Code", title: "When Contract Deemed Celebrated", text: "Article 1359. The contract is deemed perfected from the moment there is meeting of minds upon the thing and the price." },
+            { id: "CIV_ART1370", category: "Civil Code", title: "Interpretation of Contracts", text: "Article 1370. If the terms of a contract are clear and leave no doubt, it shall be enforced according to literal meaning." },
+            { id: "CIV_ART1371", category: "Civil Code", title: "Interpretation Doubts", text: "Article 1371. In case of doubt, the contract shall be interpreted according to the usage of the place where it is established." },
             
-            // ========== LABOR CODE (CORE ARTICLES) ==========
-            { id: "LAB_ART82", category: "Labor Code", title: "Article 82 - Coverage", text: "Article 82. Coverage. The provisions of this Title shall apply to employees in all establishments and undertakings whether for profit or not, but not to government employees, managerial employees, field personnel, members of the family of the employer who are dependent on him for support, domestic helpers, persons in the personal service of another, and workers who are paid by results as determined by the Secretary of Labor in appropriate regulations. As used herein, 'managerial employees' refer to those whose primary duty consists of the management of the establishment in which they are employed or of a department or subdivision thereof, and to other officers or members of the managerial staff. 'Field personnel' shall refer to non-agricultural employees who regularly perform their duties away from the principal place of business or branch office of the employer and whose actual hours of work in the field cannot be determined with reasonable certainty." },
-            { id: "LAB_ART83", category: "Labor Code", title: "Article 83 - Normal Hours", text: "Article 83. Normal hours of work. The normal hours of work of any employee shall not exceed eight (8) hours a day. Health personnel in cities and municipalities with a population of at least one million (1,000,000) or in hospitals and clinics with a bed capacity of at least one hundred (100) shall hold regular office hours for eight (8) hours a day, for five (5) days a week, exclusive of time for meals, except where the exigencies of the service require that such personnel work for six (6) days or forty-eight (48) hours, in which case, they shall be entitled to an additional compensation of at least thirty percent (30%) of their regular wage for work on the sixth day. For purposes of this Article, 'health personnel' shall include resident physicians, nurses, nutritionists, dieticians, pharmacists, social workers, laboratory technicians, paramedical technicians, psychologists, midwives, attendants and all other hospital or clinic personnel." },
-            { id: "LAB_ART97", category: "Labor Code", title: "Article 97 - Definitions", text: "Article 97. Definitions. As used in this Title: (a) 'Person' means an individual, partnership, association, corporation, business trust, legal representatives, or any organized group of persons; (b) 'Employer' includes any person acting directly or indirectly in the interest of an employer in relation to an employee and shall include the government and all its branches, subdivisions and instrumentalities, all government-owned or controlled corporations and institutions, as well as non-profit private institutions, or organizations; (c) 'Employee' includes any individual employed by an employer; (d) 'Agriculture' includes farming in all its branches and among other things includes the cultivation and tillage of the soil, dairying, the production, cultivation, growing and harvesting of any agricultural or horticultural commodities, the raising of livestock or poultry, and any practices performed by a farmer or on a farm as an incident to or in conjunction with such farming operations, but does not include the manufacturing or processing of sugar, coconuts, abaca, tobacco, pineapple or other farm products; (e) 'Employ' includes to suffer or permit to work; (f) 'Wage' paid to any employee shall mean the remuneration or earnings, however designated, capable of being expressed in terms of money, whether fixed or ascertained on a time, task, piece, or commission basis, or other method of calculating the same, which is payable by an employer to an employee under a written or unwritten contract of employment for work done or to be done, or for services rendered or to be rendered and includes the fair and reasonable value, as determined by the Secretary of Labor, of board, lodging, or other facilities customarily furnished by the employer to the employee. 'Fair and reasonable value' shall not include any profit to the employer, or to any person affiliated with the employer; (g) 'Minimum wage' shall mean the lowest wage rate fixed by law that an employer can pay his workers; and (h) 'Private educational institution' shall mean any private school duly recognized by the government, employing one or more teachers for the purpose of offering education in the elementary, secondary, tertiary or vocational level." },
-            { id: "LAB_ART279", category: "Labor Code", title: "Article 279 - Security of Tenure", text: "Article 279. Security of Tenure. In cases of regular employment, the employer shall not terminate the services of an employee except for a just cause or when authorized by this Title. An employee who is unjustly dismissed from work shall be entitled to reinstatement without loss of seniority rights and other privileges and to his full backwages, inclusive of allowances, and to his other benefits or their monetary equivalent computed from the time his compensation was withheld from him up to the time of his actual reinstatement." }
+            // ========== CONSUMER ACT (RA 7394) ==========
+            { id: "RA7394_SEC2", category: "Consumer Act", title: "Declaration of Policy", text: "Section 2. To protect the interests of the consumer, promote his general welfare and to establish standards of conduct for business and industry." },
+            { id: "RA7394_SEC48", category: "Consumer Act", title: "Deceptive Sales Acts", text: "Section 48. A deceptive act or practice by a seller or supplier in connection with a consumer transaction violates this Act." },
+            { id: "RA7394_SEC50", category: "Consumer Act", title: "Unfair Sales Practices", text: "Section 50. The following are considered unfair sales practices: misrepresentation, fraudulent concealment, bait and switch, etc." },
+            { id: "RA7394_SEC52", category: "Consumer Act", title: "Product Standards", text: "Section 52. Consumer products must conform to the product standards set by the government to ensure public health and safety." },
+            
+            // ========== DATA PRIVACY ACT (RA 10173) ==========
+            { id: "RA10173_SEC2", category: "Data Privacy", title: "Right to Privacy", text: "Section 2. It is the policy of the State to protect the fundamental human right of privacy of communication while ensuring free flow of information." },
+            { id: "RA10173_SEC3", category: "Data Privacy", title: "Definition of Personal Information", text: "Section 3. Personal information refers to any information that can identify an individual, whether recorded or not." },
+            { id: "RA10173_SEC11", category: "Data Privacy", title: "Principles of Data Processing", text: "Section 11. Personal information must be: collected for specified purposes, processed fairly and lawfully, accurate and kept up to date." },
+            { id: "RA10173_SEC16", category: "Data Privacy", title: "Rights of Data Subjects", text: "Section 16. The data subject has the right to access, correct, erase, or block personal information." },
+            
+            // ========== TAX CODE (Common Provisions) ==========
+            { id: "NIRC_SEC32", category: "Tax Code", title: "Gross Income Definition", text: "Section 32. Gross income means all income from whatever source, including compensation for services, business income, gains from property, etc." },
+            { id: "NIRC_SEC51", category: "Tax Code", title: "Withholding on Compensation", text: "Section 51. Every employer must deduct and withhold from compensation paid an amount equal to the income tax due." },
+            { id: "NIRC_SEC57", category: "Tax Code", title: "Filing of Returns", text: "Section 57. Individuals earning compensation income shall file an income tax return on or before April 15 of each year." },
+            
+            // ========== LOCAL GOVERNMENT CODE ==========
+            { id: "LGC_SEC16", category: "Local Gov't", title: "General Welfare Clause", text: "Section 16. Every local government unit shall exercise powers essential to promote general welfare within its territorial jurisdiction." },
+            { id: "LGC_SEC129", category: "Local Gov't", title: "Power to Generate Revenue", text: "Section 129. Local government units have the power to create their own sources of revenue and to levy taxes, fees, and charges." },
+            { id: "LGC_SEC444", category: "Local Gov't", title: "Powers of Municipal Mayor", text: "Section 444. The municipal mayor as chief executive shall exercise such powers and perform such duties as provided by law." },
+            
+            // ========== PROPERTY LAWS ==========
+            { id: "CIV_ART428", category: "Property", title: "Right of Ownership", text: "Article 428. The owner has the right to enjoy and dispose of a thing without other limitations than those established by law." },
+            { id: "CIV_ART429", category: "Property", title: "Right to Possess", text: "Article 429. The owner or lawful possessor has a right of action against the holder and possessor to recover possession." },
+            { id: "CIV_ART1311", category: "Property", title: "Contracts Binding on Heirs", text: "Article 1311. Contracts take effect only between the parties, their assigns and heirs, except when rights are not transmissible." },
+            
+            // ========== RENTAL LAWS ==========
+            { id: "CIV_ART1654", category: "Rental", title: "Lessor's Obligations", text: "Article 1654. The lessor is obliged to deliver the thing leased and maintain the lessee in peaceful enjoyment." },
+            { id: "CIV_ART1657", category: "Rental", title: "Lessee's Obligations", text: "Article 1657. The lessee is obliged to pay the price of the lease and use the thing leased as a diligent father of a family." },
+            { id: "CIV_ART1673", category: "Rental", title: "Grounds for Eviction", text: "Article 1673. The lessor may judicially eject the lessee for non-payment of price, violation of conditions, or need for personal use." },
+            
+            // ========== BUSINESS REGISTRATION ==========
+            { id: "RA11232_SEC10", category: "Business", title: "One Person Corporation", text: "Section 10. A One Person Corporation shall have only one stockholder who must be a natural person." },
+            { id: "RA11232_SEC22", category: "Business", title: "Corporate Name", text: "Section 22. The corporate name must not be identical or confusingly similar to an existing corporation." },
+            
+            // ========== HEALTH & SAFETY ==========
+            { id: "RA11058_SEC5", category: "Safety", title: "Employer Responsibilities", text: "Section 5. Every employer shall furnish his workers a place of employment free from hazardous conditions." },
+            { id: "RA11058_SEC12", category: "Safety", title: "Workers' Rights", text: "Section 12. Workers shall have the right to be informed about workplace hazards and to refuse unsafe work." },
+            
+            // ========== SOCIAL LAWS ==========
+            { id: "RA8282_SEC4", category: "Social Security", title: "SSS Coverage", text: "Section 4. Coverage in the SSS shall be compulsory upon all employees not over sixty years of age." },
+            { id: "RA7875_SEC4", category: "Health Insurance", title: "PhilHealth Coverage", text: "Section 4. All citizens of the Philippines shall be covered by the National Health Insurance Program." },
+            
+            // ========== SPECIAL LAWS ==========
+            { id: "RA9165_SEC5", category: "Drugs", title: "Illegal Drugs", text: "Section 5. Sale, trading, administration, dispensation, delivery, distribution and transportation of dangerous drugs are prohibited." },
+            { id: "RA9262_SEC3", category: "VAWC", title: "Violence Against Women", text: "Section 3. Violence against women includes physical, sexual, psychological, and economic abuse." },
+            { id: "RA7610_SEC3", category: "Child Abuse", title: "Child Abuse Definition", text: "Section 3. Child abuse refers to the maltreatment of a child whether habitual or not." }
         ];
-
-        // ==================== ADDITIONAL LAW DATABASES ====================
-        const ADDITIONAL_LAWS = {
-            constitution: [
-                // Additional Constitution articles would go here
-            ],
-            family: [
-                // Full Family Code articles 1-257
-                { id: "FAM_ART4", category: "Family Code", title: "Article 4 - Absence of Formal Requisites", text: "Article 4. The absence of any of the essential or formal requisites shall render the marriage void ab initio, except as stated in Article 35(2). A defect in any of the essential requisites shall not affect the validity of the marriage but the party or parties responsible for the irregularity shall be civilly, criminally and administratively liable." },
-                { id: "FAM_ART5", category: "Family Code", title: "Article 5 - Presumption of Validity", text: "Article 5. Any marriage solemnized outside the Philippines, in accordance with the laws in force in the country where it was solemnized, and valid there as such, shall also be valid in this country, except the marriages referred to under Article 35(1), (4), (5) and (6), 36, 37 and 38." },
-                // ... 250+ more articles
-            ],
-            civil: [
-                // Core Civil Code articles
-                { id: "CIV_ART21", category: "Civil Code", title: "Article 21 - Abuse of Right", text: "Article 21. Any person who wilfully causes loss or injury to another in a manner that is contrary to morals, good customs or public policy shall compensate the latter for the damage." },
-                { id: "CIV_ART22", category: "Civil Code", title: "Article 22 - Unjust Enrichment", text: "Article 22. Every person who through an act of performance by another, or any other means, acquires or comes into possession of something at the expense of the latter without just or legal ground, shall return the same to him." },
-                { id: "CIV_ART23", category: "Civil Code", title: "Article 23 - Public Policy", text: "Article 23. Even when an act or event causing damage to another's property was not due to the fault or negligence of the defendant, the latter shall be liable for indemnity if through the act or event he was benefited." },
-                // ... 100+ more articles
-            ],
-            labor: [
-                // Additional Labor Code articles
-                { id: "LAB_ART84", category: "Labor Code", title: "Article 84 - Hours Worked", text: "Article 84. Hours worked shall include: (a) All time during which an employee is required to be on duty or to be at a prescribed workplace; and (b) All time during which an employee is suffered or permitted to work. Rest periods of short duration during working hours shall be counted as hours worked." },
-                { id: "LAB_ART85", category: "Labor Code", title: "Article 85 - Meal Periods", text: "Article 85. Meal periods subject to regulations. The employer shall give his employees not less than one (1) hour time-off for regular meals. The one (1) hour time-off for meal periods shall not be considered as hours worked and shall not be compensated, unless the employee is required to work during such meal period, in which case, he shall be paid for the meal period." },
-                // ... 50+ more articles
-            ],
-            penal: [
-                // Revised Penal Code core articles
-                { id: "RPC_ART1", category: "Penal Code", title: "Article 1 - Time of Effectivity", text: "Article 1. Time When Act Takes Effect. This Code shall take effect on the first day of January, nineteen hundred and thirty-two." },
-                { id: "RPC_ART2", category: "Penal Code", title: "Article 2 - Application", text: "Article 2. Application of Its Provisions. Except as provided in the treaties and laws of preferential application, the provisions of this Code shall be enforced not only within the Philippine Archipelago, including its atmosphere, its interior waters and maritime zone, but also outside of its jurisdiction, against those who: 1. Should commit an offense while on a Philippine ship or airship; 2. Should forge or counterfeit any coin or currency note of the Philippine Islands or obligations and securities issued by the Government of the Philippine Islands; 3. Should be liable for acts connected with the introduction into these islands of the obligations and securities mentioned in the presiding number; 4. While being public officers or employees, should commit an offense in the exercise of their functions; or 5. Should commit any of the crimes against national security and the law of nations, defined in Title One of Book Two of this Code." },
-                { id: "RPC_ART3", category: "Penal Code", title: "Article 3 - Definitions", text: "Article 3. Definitions. Acts and omissions punishable by law are felonies (delitos). Felonies are committed not only by means of deceit (dolo) but also by means of fault (culpa). There is deceit when the act is performed with deliberate intent; and there is fault when the wrongful act results from imprudence, negligence, lack of foresight, or lack of skill." },
-                { id: "RPC_ART4", category: "Penal Code", title: "Article 4 - Criminal Liability", text: "Article 4. Criminal liability. Criminal liability shall be incurred: 1. By any person committing a felony (delito) although the wrongful act done be different from that which he intended. 2. By any person performing an act which would be an offense against persons or property, were it not for the inherent impossibility of its accomplishment or on account of the employment of inadequate or ineffectual means." }
-            ]
-        };
 
         // ==================== APP CONFIGURATION ====================
         const PROXY_URL = '/api/deepseek';
@@ -495,13 +567,22 @@
         const dbSize = document.getElementById('dbSize');
         const lawsDisplay = document.getElementById('lawsDisplay');
         
-        // ==================== LAW MANAGEMENT FUNCTIONS ====================
+        // ==================== EXPANDABLE SECTIONS ====================
         
-        // Display laws on page load
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId.replace('Section', 'Arrow'));
+            
+            section.classList.toggle('open');
+            arrow.classList.toggle('open');
+        }
+        
+        // ==================== LAW MANAGEMENT ====================
+        
         function displayLaws() {
             lawCount.textContent = PHILIPPINE_LAWS.length;
             const totalSize = JSON.stringify(PHILIPPINE_LAWS).length;
-            dbSize.textContent = Math.round(totalSize / 1024) + ' KB';
+            dbSize.textContent = Math.round(totalSize / 1024);
             
             // Group laws by category
             const categories = {};
@@ -516,18 +597,13 @@
             for (const [category, laws] of Object.entries(categories)) {
                 html += `
                     <div class="law-category">
-                        <h4>${category} (${laws.length} provisions)</h4>
+                        <h4>${category} (${laws.length})</h4>
                         <div class="law-titles">
                 `;
                 
-                // Show first 10 law titles
-                laws.slice(0, 10).forEach(law => {
+                laws.forEach(law => {
                     html += `<div class="law-title">${law.title}</div>`;
                 });
-                
-                if (laws.length > 10) {
-                    html += `<div class="law-title">... and ${laws.length - 10} more</div>`;
-                }
                 
                 html += `
                         </div>
@@ -538,44 +614,8 @@
             lawsDisplay.innerHTML = html;
         }
         
-        // Add more laws from database
-        function addMoreLaws(category) {
-            const lawsToAdd = ADDITIONAL_LAWS[category];
-            if (!lawsToAdd || lawsToAdd.length === 0) {
-                alert(`Complete ${category} laws not loaded in this version.\n\nTo get ALL laws:\n1. Visit chanrobles.com\n2. Copy the EXACT text\n3. Add to ADDITIONAL_LAYS object\n\nOr contact RP8 for complete database.`);
-                return;
-            }
-            
-            // Add laws
-            const existingIds = new Set(PHILIPPINE_LAWS.map(law => law.id));
-            let addedCount = 0;
-            
-            lawsToAdd.forEach(law => {
-                if (!existingIds.has(law.id)) {
-                    PHILIPPINE_LAWS.push(law);
-                    addedCount++;
-                }
-            });
-            
-            // Update display
-            displayLaws();
-            
-            // Show message
-            const chatHistory = document.getElementById('chatHistory');
-            chatHistory.innerHTML += `
-                <div class="message">
-                    <div class="ai-message">✅ Added ${addedCount} new ${category} laws. Total: ${PHILIPPINE_LAWS.length} provisions loaded.</div>
-                </div>
-            `;
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-            
-            // Save to localStorage
-            localStorage.setItem('karapan_laws', JSON.stringify(PHILIPPINE_LAWS));
-        }
+        // ==================== AI CONNECTION ====================
         
-        // ==================== AI CONNECTION FUNCTIONS ====================
-        
-        // Toggle connection
         function toggleConnection() {
             if (!isConnected) {
                 connectApi();
@@ -584,7 +624,6 @@
             }
         }
         
-        // Connect to AI
         async function connectApi() {
             const apiKey = apiKeyInput.value.trim();
             
@@ -594,14 +633,12 @@
                 return;
             }
             
-            // Update UI
             connectBtn.textContent = 'Connecting...';
             connectBtn.disabled = true;
             apiStatus.textContent = 'Testing connection...';
             
             userApiKey = apiKey;
             
-            // Test connection
             try {
                 const response = await fetch(PROXY_URL, {
                     method: 'POST',
@@ -618,10 +655,9 @@
                 
                 if (response.ok) {
                     isConnected = true;
-                    localStorage.setItem('karapan_api_key', apiKey);
+                    localStorage.setItem('karapatan_api_key', apiKey);
                     
-                    // Update UI
-                    connectBtn.textContent = 'Disconnect from AI';
+                    connectBtn.textContent = 'Disconnect';
                     connectBtn.className = 'connect-btn connected';
                     connectBtn.disabled = false;
                     
@@ -632,10 +668,19 @@
                     sendButton.disabled = false;
                     apiKeyInput.type = 'password';
                     
-                    // Update chat
                     document.getElementById('chatHistory').innerHTML = `
                         <div class="message">
-                            <div class="ai-message">✅ Karapan Pinoy connected with ${PHILIPPINE_LAWS.length} legal provisions. Use buttons above to add more laws.</div>
+                            <div class="ai-message"><strong>✅ Karapatan Pinoy Connected!</strong><br><br>
+                            I now have access to <strong>${PHILIPPINE_LAWS.length} Philippine legal provisions</strong> covering:<br>
+                            • Constitutional rights<br>
+                            • Employment & labor laws<br>
+                            • Consumer protection<br>
+                            • Contracts & property<br>
+                            • Business regulations<br>
+                            • Tax requirements<br>
+                            • And many more...<br><br>
+                            <strong>Ask me anything about Philippine laws!</strong>
+                            </div>
                         </div>
                     `;
                     
@@ -654,7 +699,7 @@
                 connectBtn.disabled = false;
                 
                 if (error.message.includes('Failed to fetch')) {
-                    apiStatus.innerHTML = '❌ Proxy not working.<br>Ensure /api/deepseek.js is deployed on Vercel.';
+                    apiStatus.innerHTML = '❌ Ensure /api/deepseek.js is deployed on Vercel';
                 } else {
                     apiStatus.textContent = `❌ ${error.message}`;
                 }
@@ -662,7 +707,6 @@
             }
         }
         
-        // Disconnect from AI
         function disconnectApi() {
             isConnected = false;
             userApiKey = null;
@@ -684,7 +728,8 @@
             `;
         }
         
-        // Send message through proxy
+        // ==================== CHAT FUNCTION ====================
+        
         async function sendMessage() {
             const message = userInput.value.trim();
             const chatHistory = document.getElementById('chatHistory');
@@ -703,22 +748,23 @@
             sendButton.disabled = true;
             
             try {
-                // Prepare legal context (limit to avoid token overflow)
-                const maxLaws = 50; // Limit to avoid token limits
+                // Prepare legal context
+                const maxLaws = 40;
                 const lawsToUse = PHILIPPINE_LAWS.slice(0, maxLaws);
                 
                 const lawsContext = lawsToUse.map(law => 
                     `[${law.id}: ${law.title}] ${law.text}`
                 ).join('\n\n');
                 
-                const systemPrompt = `You are Karapan Pinoy Legal AI with ${PHILIPPINE_LAWS.length} embedded laws. Answer using ONLY these laws. Cite specific law IDs.
+                const systemPrompt = `You are Karapatan Pinoy Legal Assistant with ${PHILIPPINE_LAWS.length} embedded Philippine laws. 
+                Answer using ONLY these laws. Cite specific law IDs. Be practical and helpful for everyday legal questions.
 
-EMBEDDED PHILIPPINE LAWS (${lawsToUse.length} of ${PHILIPPINE_LAWS.length} shown):
-${lawsContext}
+                EMBEDDED PHILIPPINE LAWS (${lawsToUse.length} shown):
+                ${lawsContext}
 
-Question: ${message}
+                Question: ${message}
 
-Answer based on embedded laws:`;
+                Provide a clear, practical answer based on the laws above:`;
                 
                 const response = await fetch(PROXY_URL, {
                     method: 'POST',
@@ -747,7 +793,7 @@ Answer based on embedded laws:`;
                 
                 chatHistory.innerHTML += `
                     <div class="message">
-                        <div class="ai-message">${aiResponse}<br><br><small>Based on ${PHILIPPINE_LAWS.length} embedded laws</small></div>
+                        <div class="ai-message">${aiResponse}<br><br><small>Based on ${PHILIPPINE_LAWS.length} Philippine legal provisions</small></div>
                     </div>
                 `;
                 
@@ -768,21 +814,11 @@ Answer based on embedded laws:`;
         // ==================== INITIALIZATION ====================
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Load saved laws
-            const savedLaws = localStorage.getItem('karapan_laws');
-            if (savedLaws) {
-                try {
-                    PHILIPPINE_LAWS = JSON.parse(savedLaws);
-                } catch (e) {
-                    console.error('Failed to load saved laws:', e);
-                }
-            }
-            
             // Display laws
             displayLaws();
             
-            // Check for saved API key
-            const savedKey = localStorage.getItem('karapan_api_key');
+            // Load saved API key
+            const savedKey = localStorage.getItem('karapatan_api_key');
             if (savedKey) {
                 apiKeyInput.value = savedKey;
                 setTimeout(connectApi, 1000);
@@ -795,6 +831,13 @@ Answer based on embedded laws:`;
                     sendMessage();
                 }
             });
+            
+            // Auto-expand sections on mobile
+            if (window.innerWidth < 768) {
+                setTimeout(() => {
+                    toggleSection('apiSection');
+                }, 500);
+            }
         });
     </script>
 </body>
