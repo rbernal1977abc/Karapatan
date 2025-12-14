@@ -26,7 +26,7 @@
         .header {
             background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
             color: white;
-            padding: 25px 20px;
+            padding: 30px 20px;
             text-align: center;
             border-bottom: 5px solid #ffd700;
         }
@@ -159,7 +159,7 @@
             border: 2px solid #ffcdd2;
         }
         
-        /* Chat Interface - WIDER for mobile */
+        /* Chat Interface */
         .chat-interface {
             background: white;
             border-radius: 15px;
@@ -393,7 +393,6 @@
         <!-- Stats Bar -->
         <div class="stats-bar">
             <div>📚 <span id="lawCount">0</span> Legal Provisions</div>
-            <div>⚖️ <span id="dbSize">0</span> KB Database</div>
             <div>🇵🇭 Updated 2024</div>
         </div>
         
@@ -564,7 +563,6 @@
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendButton');
         const lawCount = document.getElementById('lawCount');
-        const dbSize = document.getElementById('dbSize');
         const lawsDisplay = document.getElementById('lawsDisplay');
         
         // ==================== EXPANDABLE SECTIONS ====================
@@ -581,8 +579,6 @@
         
         function displayLaws() {
             lawCount.textContent = PHILIPPINE_LAWS.length;
-            const totalSize = JSON.stringify(PHILIPPINE_LAWS).length;
-            dbSize.textContent = Math.round(totalSize / 1024);
             
             // Group laws by category
             const categories = {};
